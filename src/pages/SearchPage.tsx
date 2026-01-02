@@ -132,11 +132,29 @@ export default function SearchPage() {
     });
   };
 
+  const formatDuration = (duration?: string) => {
+    if (!duration) return null;
+    
+    // ISO 8601 형식 (PT1H2M30S)을 파싱
+    const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+    if (!match) return duration;
+    
+    const hours = parseInt(match[1] || '0');
+    const minutes = parseInt(match[2] || '0');
+    const seconds = parseInt(match[3] || '0');
+    
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    } else {
+      return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+  };
+
   return (
     <div className="search-page">
       <div className="search-header">
-        <h1>YouTube 영상 검색</h1>
-        <p className="subtitle">키워드, 조회수, 구독자수 등으로 영상을 검색하세요</p>
+        <h1>YouTube 검색</h1>
+        <p className="subtitle">원하는 영상을 빠르고 정확하게 찾아보세요</p>
       </div>
 
       <form onSubmit={handleSearch} className="search-form">
@@ -150,7 +168,7 @@ export default function SearchPage() {
             required
           />
           <button type="submit" className="search-button" disabled={loading}>
-            {loading ? '검색 중...' : '🔍 검색'}
+            {loading ? '검색 중...' : '검색'}
           </button>
         </div>
 
@@ -266,8 +284,8 @@ export default function SearchPage() {
             >
               <div className="video-thumbnail">
                 <img src={video.thumbnailUrl} alt={video.title} />
-                {video.duration && (
-                  <span className="video-duration">{video.duration}</span>
+                {formatDuration(video.duration) && (
+                  <span className="video-duration">{formatDuration(video.duration)}</span>
                 )}
               </div>
               <div className="video-info">
@@ -275,13 +293,32 @@ export default function SearchPage() {
                 <p className="video-channel">{video.channelTitle}</p>
                 <div className="video-meta">
                   {video.viewCount && (
-                    <span>👁️ {formatNumber(video.viewCount)}</span>
+                    <span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                      {formatNumber(video.viewCount)}
+                    </span>
                   )}
                   {video.likeCount && (
-                    <span>👍 {formatNumber(video.likeCount)}</span>
+                    <span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                      </svg>
+                      {formatNumber(video.likeCount)}
+                    </span>
                   )}
                   {video.subscriberCount && (
-                    <span>👥 {formatNumber(video.subscriberCount)}</span>
+                    <span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                      </svg>
+                      {formatNumber(video.subscriberCount)}
+                    </span>
                   )}
                 </div>
                 <p className="video-date">{formatDate(video.publishedAt)}</p>
@@ -293,7 +330,7 @@ export default function SearchPage() {
 
       {videos.length === 0 && !loading && !error && (
         <div className="empty-state">
-          <p>검색어를 입력하고 검색 버튼을 눌러주세요.</p>
+          <p>검색어를 입력하고 검색을 시작하세요</p>
         </div>
       )}
 
@@ -304,21 +341,21 @@ export default function SearchPage() {
             disabled={currentPageNumber === 1 || loading}
             className="pagination-button prev"
           >
-            ← 이전
+            이전
           </button>
           
           <div className="pagination-info">
             <span className="page-number">
-              {currentPageNumber}페이지
+              {currentPageNumber}
             </span>
             {totalResults > 0 && (
               <span className="page-range">
-                ({calculateCurrentRange().start.toLocaleString()} - {calculateCurrentRange().end.toLocaleString()} / {totalResults.toLocaleString()})
+                {calculateCurrentRange().start.toLocaleString()} - {calculateCurrentRange().end.toLocaleString()} / {totalResults.toLocaleString()}
               </span>
             )}
             {calculateTotalPages() > 0 && (
               <span className="total-pages">
-                (총 약 {calculateTotalPages()}페이지)
+                총 {calculateTotalPages()}페이지
               </span>
             )}
           </div>
@@ -328,7 +365,7 @@ export default function SearchPage() {
             disabled={!nextPageToken || loading}
             className="pagination-button next"
           >
-            다음 →
+            다음
           </button>
         </div>
       )}
