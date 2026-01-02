@@ -6,7 +6,7 @@ export interface VideoSearchRequest {
   order?: 'date' | 'rating' | 'relevance' | 'title' | 'videoCount' | 'viewCount';
   publishedAfter?: string;
   publishedBefore?: string;
-  videoDuration?: 'any' | 'short' | 'medium' | 'long';
+  videoDuration?: 'any' | 'shorts' | 'short' | 'medium' | 'long';
   pageToken?: string;
   minViewCount?: number;
   maxViewCount?: number;

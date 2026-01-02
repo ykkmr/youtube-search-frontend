@@ -17,7 +17,7 @@ export default function SearchPage() {
   // 필터 상태
   const [order, setOrder] = useState<'date' | 'rating' | 'relevance' | 'title' | 'videoCount' | 'viewCount'>('relevance');
   const [maxResults, setMaxResults] = useState(25);
-  const [videoDuration, setVideoDuration] = useState<'any' | 'short' | 'medium' | 'long'>('any');
+  const [videoDuration, setVideoDuration] = useState<'any' | 'shorts' | 'short' | 'medium' | 'long'>('any');
   const [minViewCount, setMinViewCount] = useState<string>('');
   const [maxViewCount, setMaxViewCount] = useState<string>('');
 
@@ -30,7 +30,7 @@ export default function SearchPage() {
         keyword: keyword.trim(),
         maxResults,
         order,
-        videoDuration: videoDuration !== 'any' ? videoDuration : undefined,
+        videoDuration: videoDuration !== 'any' ? (videoDuration === 'shorts' ? 'short' : videoDuration) : undefined,
         minViewCount: minViewCount ? parseInt(minViewCount) : undefined,
         maxViewCount: maxViewCount ? parseInt(maxViewCount) : undefined,
         pageToken,
@@ -209,6 +209,7 @@ export default function SearchPage() {
               }}
             >
               <option value="any">전체</option>
+              <option value="shorts">1분 미만 (Shorts)</option>
               <option value="short">4분 미만</option>
               <option value="medium">4-20분</option>
               <option value="long">20분 이상</option>
